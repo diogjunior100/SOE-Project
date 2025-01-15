@@ -1,0 +1,3 @@
+FROM postgres:latest
+
+ADD ./src/sql/table.sql /docker-entrypoint-initdb.d
