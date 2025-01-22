@@ -1,49 +1,28 @@
-from flask import Flask, request, jsonify
-import psycopg2
-from psycopg2 import sql
+import json
+import requests
+import time
 
-app = Flask(__name__)
-
-# Configurações do Banco de Dados PostgreSQL
-DB_CONFIG = {
-    'dbname': 'seu_banco',
-    'user': 'seu_usuario',
-    'password': 'sua_senha',
-    'host': 'localhost',  # Use o IP ou hostname do servidor, se não estiver na mesma máquina
-    'port': 5432
+# Dados para envio
+data = {
+    "sensor_id": 1,
+    "humidity": 45.2,
+    "temperature": 22.5
 }
 
-# Função para inserir dados no PostgreSQL
-def insert_data(sensor_id, humidity, temperature):
-    try:
-        # Conexão com o banco
-        connection = psycopg2.connect(**DB_CONFIG)
-        cursor = connection.cursor()
+# URL do servidor/API
+url = "http://127.0.0.1:8000/api/dados"
 
-        # Query para inserir dados
-        query = """
-            INSERT INTO sensores (sensor_id, humidity, temperature, timestamp)
-            VALUES (%s, %s, %s, CURRENT_TIMESTAMP)
-        """
-        cursor.execute(query, (sensor_id, humidity, temperature))
-        
-        # Confirmando a transação
-        connection.commit()
-        cursor.close()
-        connection.close()
-    except psycopg2.Error as e:
-        raise Exception(f"Erro ao inserir dados no banco: {e}")
-
-@app.route('/api/dados', methods=['POST'])
-def receive_data():
-    # Recebendo o JSON enviado
-    data = request.get_json()
+while (1):
     try:
-        # Validando e salvando os dados
-        insert_data(data['sensor_id'], data['humidity'], data['temperature'])
-        return jsonify({"status": "sucesso"}), 200
+        # Enviando dados via POST
+        response = requests.post(url, json=data)
+        #response = requests.post(url, json=payload, headers=headers)
+
+        if response.status_code == 200:
+            print("Dados enviados com sucesso!")
+        else:
+            print(f"Erro ao enviar dados: {response.status_code} - {response.text}")
+
+        time.sleep(10)
     except Exception as e:
-        return jsonify({"erro": str(e)}), 500
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+        print(f"Erro na conexão: {e}")

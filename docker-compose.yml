@@ -1,12 +1,12 @@
-version: "3.9"
+version: lastest
 
 services:
-  red-game:
+  client:
     image: python-client
     container_name: python-client
     build:
       context: .
-      dockerfile: gameDockerFile
+      dockerfile: serverDockerFile
     entrypoint: "tail -f /dev/null"
     volumes:
       - ".:/app"
@@ -17,7 +17,7 @@ services:
       - postgres-connection
 
   db:
-    container_name: postgres_container
+    container_name: postgres
     build: 
       context: .
       dockerfile: postgresDockerFile
