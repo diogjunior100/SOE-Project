@@ -8,24 +8,26 @@
 #define PORT 12345
 #define BUFFER_SIZE 1024
 
+using namespace std;
+
 // Função para atualizar o banco de dados PostgreSQL
-void update_database(const std::string& data) {
+void update_database(const string& data) {
     const char* conninfo = "user=postgres password=postgres hostaddr=127.0.0.1 port=5432";
     PGconn* conn = PQconnectdb(conninfo);
 
     if (PQstatus(conn) != CONNECTION_OK) {
-        std::cerr << "Erro ao conectar ao banco de dados: " << PQerrorMessage(conn) << "\n";
+        cerr << "Erro ao conectar ao banco de dados: " << PQerrorMessage(conn) << "\n";
         PQfinish(conn);
         return;
     }
 
-    std::string query = "INSERT INTO sensor_data (value) VALUES ('" + data + "');";
+    string query = "INSERT INTO sensor_data (value) VALUES ('" + data + "');";
     PGresult* res = PQexec(conn, query.c_str());
 
     if (PQresultStatus(res) != PGRES_COMMAND_OK) {
-        std::cerr << "Erro ao executar a query: " << PQerrorMessage(conn) << "\n";
+        cerr << "Erro ao executar a query: " << PQerrorMessage(conn) << "\n";
     } else {
-        std::cout << "Dado inserido no banco de dados: " << data << "\n";
+        cout << "Dado inserido no banco de dados: " << data << "\n";
     }
 
     PQclear(res);
@@ -36,7 +38,7 @@ int main() {
     // Criar socket do servidor
     int server_socket = socket(AF_INET, SOCK_STREAM, 0);
     if (server_socket < 0) {
-        std::cerr << "Erro ao criar o socket.\n";
+        cerr << "Erro ao criar o socket.\n";
         return 1;
     }
 
@@ -48,40 +50,40 @@ int main() {
 
     // Bind do socket
     if (bind(server_socket, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0) {
-        std::cerr << "Erro ao fazer o bind.\n";
+        cerr << "Erro ao fazer o bind.\n";
         close(server_socket);
         return 1;
     }
 
     // Escutar por conexões
     if (listen(server_socket, 5) < 0) {
-        std::cerr << "Erro ao escutar no socket.\n";
+        cerr << "Erro ao escutar no socket.\n";
         close(server_socket);
         return 1;
     }
 
-    std::cout << "Servidor aguardando conexões na porta " << PORT << "...\n";
+    cout << "Servidor aguardando conexões na porta " << PORT << "...\n";
 
     // Aceitar conexão do cliente
     sockaddr_in client_addr{};
     socklen_t client_len = sizeof(client_addr);
     int client_socket = accept(server_socket, (struct sockaddr*)&client_addr, &client_len);
     if (client_socket < 0) {
-        std::cerr << "Erro ao aceitar a conexão.\n";
+        cerr << "Erro ao aceitar a conexão.\n";
         close(server_socket);
         return 1;
     }
 
-    std::cout << "Conexão aceita.\n";
+    cout << "Conexão aceita.\n";
 
     // Receber dados do cliente
     char buffer[BUFFER_SIZE] = {0};
     ssize_t bytes_received = recv(client_socket, buffer, BUFFER_SIZE, 0);
     if (bytes_received < 0) {
-        std::cerr << "Erro ao receber os dados.\n";
+        cerr << "Erro ao receber os dados.\n";
     } else {
-        std::string received_data(buffer, bytes_received);
-        std::cout << "Dados recebidos: " << received_data << "\n";
+        string received_data(buffer, bytes_received);
+        cout << "Dados recebidos: " << received_data << "\n";
 
         // Atualizar banco de dados
         update_database(received_data);
