@@ -1,21 +1,6 @@
 version: lastest
 
 services:
-  client:
-    image: python-client
-    container_name: python-client
-    build:
-      context: .
-      dockerfile: serverDockerFile
-    entrypoint: "tail -f /dev/null"
-    volumes:
-      - ".:/app"
-    depends_on:
-      - db
-    restart: always
-    networks:
-      - postgres-connection
-
   db:
     container_name: postgres
     build: 
