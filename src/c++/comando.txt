@@ -1,3 +1,8 @@
 MacOs: 
 - g++ -std=c++17 servidor.cpp -o servidor -lpq -I/opt/homebrew/opt/libpq/include -L/opt/homebrew/opt/libpq/lib
 - g++ -std=c++17 cliente.cpp -o cliente
+
+Ubuntu:
+sudo apt-get install libpqxx-dev
+- g++ -std=c++17 servidor.cpp -o servidor -lpq -libpqxx
+- g++ -std=c++17 cliente.cpp -o cliente
