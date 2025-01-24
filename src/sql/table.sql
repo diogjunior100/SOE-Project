@@ -1,5 +1,4 @@
-CREATE TABLE sensor_data (
-    id SERIAL PRIMARY KEY,
-    value TEXT NOT NULL,
-    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+CREATE TABLE dados (
+    id SERIAL PRIMARY KEY,  -- ID autoincrementável
+    valor TEXT              -- Coluna para armazenar os valores
 );
